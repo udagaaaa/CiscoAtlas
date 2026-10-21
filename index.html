@@ -1,0 +1,720 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<title>Cisco 製品アトラス</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@700;900&display=swap">
+<style>
+/* Layout: ラックのように積み重なるファミリー帯。上に配置マップ、下にカード/ツリーの2ビュー、右から詳細ドロワー */
+:root{
+  --bg:#EEF2F5; --surface:#FFFFFF; --sunk:#E3E9EE; --ink:#13202B; --muted:#56687A; --line:#D3DBE3;
+  --accent:#0A6CB4; --led:#23A455; --screen:#1C2B38; --shadow:0 1px 2px rgba(19,32,43,.06),0 8px 24px rgba(19,32,43,.06);
+  --f-net:#0A6CB4; --f-wls:#0891A8; --f-sec:#C2410C; --f-col:#15803D; --f-dc:#6D28D9; --f-obs:#B45309; --f-iot:#4D7C0F; --f-sp:#3730A3;
+  --font-display:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --font-body:"IBM Plex Sans JP","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D141B; --surface:#151F29; --sunk:#1B2834; --ink:#E4ECF2; --muted:#93A4B4; --line:#263644;
+  --accent:#5AB4F0; --led:#4CD97B; --screen:#081016; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --f-net:#5AB4F0; --f-wls:#3CC7DC; --f-sec:#F2875A; --f-col:#56C987; --f-dc:#A78BFA; --f-obs:#F0B54D; --f-iot:#9BCB4A; --f-sp:#8C93F5;
+  color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0D141B; --surface:#151F29; --sunk:#1B2834; --ink:#E4ECF2; --muted:#93A4B4; --line:#263644;
+  --accent:#5AB4F0; --led:#4CD97B; --screen:#081016; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --f-net:#5AB4F0; --f-wls:#3CC7DC; --f-sec:#F2875A; --f-col:#56C987; --f-dc:#A78BFA; --f-obs:#F0B54D; --f-iot:#9BCB4A; --f-sp:#8C93F5;
+  color-scheme:dark;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.3}
+.mono{font-family:var(--font-mono)}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:clamp(16px,3vw,32px)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.brand .leds{display:flex;gap:3px}
+.brand .leds i{width:6px;height:6px;border-radius:50%;background:var(--led);opacity:.9}
+.brand .leds i:nth-child(2){animation:blink 2.4s infinite}
+.brand .leds i:nth-child(3){background:var(--f-obs)}
+@keyframes blink{50%{opacity:.25}}
+.brand b{font-family:var(--font-display);font-size:17px;font-weight:900;letter-spacing:.02em}
+.brand small{color:var(--muted);font-size:11px;letter-spacing:.08em}
+.search{position:relative;flex:1 1 260px;max-width:420px}
+.search input{width:100%;padding:8px 12px 8px 34px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted)}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:7px 12px;font-size:13px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* hero + map */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.9fr);gap:28px;padding-block:28px 8px;align-items:start}
+.hero h1{font-size:clamp(26px,3.2vw,38px);font-weight:900;letter-spacing:.01em}
+.hero p{color:var(--muted);margin:10px 0 0;max-width:34em}
+.stats{display:flex;gap:22px;margin-top:18px;flex-wrap:wrap}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-family:var(--font-mono);font-size:26px;font-weight:500;font-variant-numeric:tabular-nums}
+.stats span{font-size:12px;color:var(--muted);letter-spacing:.06em}
+.mapbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 10px;box-shadow:var(--shadow);min-width:0}
+.mapbox header{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.mapbox h2{font-size:15px}
+.mapbox header span{font-size:12px;color:var(--muted)}
+.mapscroll{overflow-x:auto}
+#map{display:block;width:100%;min-width:640px;height:auto}
+#map .zone{cursor:pointer}
+#map .zone rect.zb{fill:var(--sunk);stroke:var(--line);stroke-width:1.2;transition:fill .15s,stroke .15s}
+#map .zone:hover rect.zb,#map .zone:focus-visible rect.zb{stroke:var(--accent)}
+#map .zone.on rect.zb{fill:color-mix(in srgb,var(--accent) 16%,var(--surface));stroke:var(--accent);stroke-width:2}
+#map text{fill:var(--ink);font-family:var(--font-body)}
+#map .zl{font-size:13px;font-weight:700}
+#map .zs{font-size:10.5px;fill:var(--muted)}
+#map .wire{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 4;fill:none}
+#map .band rect{fill:var(--surface);stroke-width:1.4;stroke-dasharray:2 3}
+#map .band.on rect{stroke-dasharray:none;stroke-width:2.4}
+#map .band:hover rect{stroke-dasharray:none}
+#map .band text{font-size:11px;font-weight:700}
+#map .dot{stroke:var(--surface);stroke-width:1.5}
+
+/* filter row */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-block:18px 6px}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer}
+.chip i{width:9px;height:9px;border-radius:2px;background:var(--c)}
+.chip[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,var(--surface));font-weight:700}
+.chip .n{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.active-zone{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.active-zone button{border:1px solid var(--line);background:none;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:12px}
+.empty{padding:40px 0;color:var(--muted);text-align:center}
+
+/* family band (card view) */
+.fam{padding-block:22px 10px;border-top:1px solid var(--line);scroll-margin-top:72px}
+.fam-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:start;margin-bottom:14px}
+.fam-ico{width:44px;height:44px;border-radius:10px;background:color-mix(in srgb,var(--c) 15%,var(--surface));color:var(--c);display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
+.fam-ico svg{width:26px;height:26px}
+.fam-head h2{font-size:21px;font-weight:900}
+.fam-head h2 small{font-family:var(--font-mono);font-weight:400;font-size:12px;color:var(--muted);margin-left:8px;letter-spacing:.04em}
+.fam-head p{margin:4px 0 0;color:var(--muted);font-size:14px;max-width:62em}
+.fam-head .cnt{font-family:var(--font-mono);font-size:12px;color:var(--muted);white-space:nowrap;padding-top:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px}
+.card{all:unset;box-sizing:border-box;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;min-width:0}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--c) 55%,var(--line))}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.art{aspect-ratio:16/9;max-width:100%;background:
+  radial-gradient(circle at 1px 1px,color-mix(in srgb,var(--c) 22%,transparent) 1px,transparent 1.5px) 0 0/12px 12px,
+  color-mix(in srgb,var(--c) 8%,var(--sunk));color:var(--c);display:grid;place-items:center;border-bottom:1px solid var(--line)}
+.art svg{width:78%;height:78%}
+.card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card h3{font-size:15.5px;font-weight:700;font-family:var(--font-body)}
+.card .tag{font-size:13px;color:var(--muted);line-height:1.55}
+.models{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto;padding-top:6px}
+.models span{font-family:var(--font-mono);font-size:11px;padding:1px 6px;border-radius:4px;background:var(--sunk);color:var(--ink);white-space:nowrap}
+.kind{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+
+/* tree view */
+.tree{display:grid;gap:10px;padding-block:6px 30px}
+.tree details{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tree summary{display:flex;gap:12px;align-items:center;padding:12px 16px;cursor:pointer;list-style:none;border-left:4px solid var(--c)}
+.tree summary::-webkit-details-marker{display:none}
+.tree summary::after{content:"+";margin-left:auto;font-family:var(--font-mono);color:var(--muted);font-size:18px}
+.tree details[open] summary::after{content:"−"}
+.tree summary b{font-family:var(--font-display);font-size:17px}
+.tree summary .meta{color:var(--muted);font-size:12px;font-family:var(--font-mono)}
+.tree ul{list-style:none;margin:0;padding:4px 16px 14px 36px;display:grid;gap:2px}
+.tree li{position:relative;padding:6px 0 6px 16px;border-left:1px solid var(--line)}
+.tree li::before{content:"";position:absolute;left:0;top:18px;width:11px;border-top:1px solid var(--line)}
+.tree li button{all:unset;cursor:pointer;font-weight:700;font-size:14px}
+.tree li button:hover{color:var(--accent)}
+.tree li button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tree li .t{color:var(--muted);font-size:13px;margin-left:8px}
+.tree li .models{padding-top:4px}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(8,14,20,.45);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--surface);z-index:41;transform:translateX(100%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s;display:flex;flex-direction:column;border-left:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.on{transform:none;visibility:visible;transition:transform .25s ease}
+.drawer .art{aspect-ratio:auto;height:150px;flex:none}
+.drawer .art svg{width:60%;height:80%}
+.d-top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);gap:8px}
+.d-top .crumb{font-size:12px;color:var(--muted);font-family:var(--font-mono);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.d-top button{border:1px solid var(--line);background:none;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:13px}
+.d-body{overflow-y:auto;padding:18px 20px 28px;display:grid;gap:18px;align-content:start}
+.d-body h2{font-size:24px;font-weight:900}
+.d-body .lead{color:var(--muted);margin:4px 0 0}
+.d-body h4{margin:0 0 6px;font-size:11.5px;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.d-body p{margin:0}
+.spec{width:100%;border-collapse:collapse;font-size:13.5px}
+.spec th,.spec td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.spec th{font-family:var(--font-mono);font-weight:500;white-space:nowrap;width:1%}
+.uses{margin:0;padding-left:1.2em;display:grid;gap:3px}
+.zones{display:flex;gap:6px;flex-wrap:wrap}
+.zones span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 10px}
+.rel{display:flex;gap:6px;flex-wrap:wrap}
+.rel button{border:1px solid var(--line);background:var(--sunk);border-radius:6px;padding:3px 10px;font-size:13px;cursor:pointer}
+.rel button:hover{border-color:var(--accent)}
+.ext{display:inline-flex;gap:6px;align-items:center;color:var(--accent);font-weight:700;text-decoration:none}
+.ext:hover{text-decoration:underline}
+.note{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+footer.foot{padding-block:24px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);margin-top:20px}
+
+/* card flags + alias hint */
+.flags{display:flex;gap:4px;flex-wrap:wrap}
+.flags span{font-size:10.5px;padding:0 6px;border-radius:4px;border:1px solid color-mix(in srgb,var(--c) 45%,var(--line));color:var(--c);line-height:1.7}
+.was{font-size:12px;color:var(--muted)}
+.was b{color:var(--ink);font-weight:500}
+
+/* drawer tabs */
+.tabs[hidden]{display:none}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px;overflow-x:auto;flex:none}
+.tabs button{border:0;background:none;padding:10px 12px 9px;font-size:13.5px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--c)}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.tblwrap .spec{min-width:520px}
+.tblwrap .spec th,.tblwrap .spec td{white-space:nowrap}
+.tblwrap .spec thead th{background:var(--sunk);font-family:var(--font-body);font-weight:700;font-size:12px;color:var(--muted);width:auto}
+.tblwrap .spec td:first-child{font-family:var(--font-mono);font-weight:500}
+.tblwrap .spec td{font-variant-numeric:tabular-nums}
+.tier{display:grid;grid-template-columns:minmax(96px,auto) minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tier>div{padding:8px 10px;border-bottom:1px solid var(--line);font-size:13.5px}
+.tier>div:nth-last-child(-n+2){border-bottom:0}
+.tier>div:nth-child(odd){font-weight:700;background:color-mix(in srgb,var(--c) 8%,var(--surface))}
+.badge{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:2px}
+.badge.ok{background:color-mix(in srgb,var(--led) 18%,var(--surface));color:var(--ink);border:1px solid color-mix(in srgb,var(--led) 50%,transparent)}
+.badge.ng{background:color-mix(in srgb,var(--f-obs) 16%,var(--surface));color:var(--ink);border:1px solid color-mix(in srgb,var(--f-obs) 50%,transparent)}
+.src{margin:0;padding-left:1.2em;font-size:12.5px;display:grid;gap:2px}
+.src a{color:var(--accent)}
+.rivals{display:flex;flex-wrap:wrap;gap:6px}
+.rivals span{border:1px solid var(--line);background:var(--sunk);border-radius:6px;padding:3px 10px;font-size:13px}
+
+/* alias view */
+.alias{padding-block:8px 30px;display:grid;gap:22px}
+.alias h2{font-size:17px;margin-bottom:8px}
+.alias h2 small{font-family:var(--font-mono);font-weight:400;color:var(--muted);font-size:12px;margin-left:6px}
+.alias .tblwrap{background:var(--surface)}
+.alias table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+.alias th,.alias td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+.alias thead th{font-size:12px;color:var(--muted);background:var(--sunk)}
+.alias td.o{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 50%,transparent)}
+.alias td.arrow{color:var(--muted);width:1%;padding-inline:0}
+.alias td.n{font-weight:700}
+.alias td button{border:1px solid var(--line);background:none;border-radius:6px;padding:2px 10px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.alias td button:hover{border-color:var(--accent)}
+.alias tbody tr:last-child td{border-bottom:0}
+
+/* device illustration parts */
+.art .a-b{fill:var(--surface);stroke:currentColor;stroke-width:1.4}
+.art .a-p{fill:color-mix(in srgb,currentColor 20%,var(--sunk))}
+.art .a-d{fill:var(--screen)}
+.art .a-l{fill:var(--led)}
+.art .a-w{fill:var(--f-obs)}
+.art .a-c{fill:currentColor}
+.art .a-s{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.art .a-x{fill:none;stroke:var(--surface);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.art .a-t{fill:color-mix(in srgb,currentColor 55%,var(--screen))}
+
+@media (max-width:860px){.hero{grid-template-columns:1fr}.fam-head{grid-template-columns:auto minmax(0,1fr)}.fam-head .cnt{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <span class="leds" aria-hidden="true"><i></i><i></i><i></i></span>
+      <b>Cisco 製品アトラス</b>
+      <small>非公式まとめ</small>
+    </div>
+    <label class="search" for="q">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="製品名・型番・用途で検索（例: C9300, SASE, Wi-Fi 7）" autocomplete="off">
+    </label>
+    <div class="seg" role="group" aria-label="表示切替">
+      <button id="v-card" aria-pressed="true">カード</button>
+      <button id="v-tree" aria-pressed="false">ツリー</button>
+      <button id="v-alias" aria-pressed="false">旧名→新名</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <h1>ネットワークからAIインフラまで、ファミリー単位で見渡す</h1>
+      <p>Ciscoの主要製品をファミリー → 製品 → シリーズ/型番の3階層で整理しました。右のマップで設置場所を選ぶと、その場所で使う製品だけに絞り込めます。カードを開くと、概要に加えて型番スペック・ライセンス・競合のタブが見られます。旧製品名で検索しても現在の製品が見つかります。</p>
+      <div class="stats" id="stats"></div>
+    </div>
+    <figure class="mapbox" style="margin:0">
+      <header><h2>どこで使う製品か</h2><span>エリアをクリックで絞り込み</span></header>
+      <div class="mapscroll"><svg id="map" viewBox="0 0 900 300" role="group" aria-label="設置場所マップ"></svg></div>
+    </figure>
+  </section>
+
+  <div class="filters" id="chips"></div>
+  <div id="view"></div>
+</main>
+
+<footer class="foot wrap">個人作成の非公式な一覧です（2026年10月時点の公開情報をもとに整理）。製品名・ラインナップ・販売状況は変わることがあるため、正確な情報は各製品の公式ページで確認してください。製品写真の代わりに、機器の形状を模したイラストを使っています。</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title" aria-hidden="true">
+  <div class="d-top"><span class="crumb" id="d-crumb"></span><button id="d-close">閉じる ✕</button></div>
+  <div class="art" id="d-art"></div>
+  <div class="tabs" id="d-tabs" role="tablist" aria-label="詳細の切り替え"></div>
+  <div class="d-body" id="d-body" role="tabpanel"></div>
+</aside>
+
+<script src="data/aliases.js"></script>
+<script src="data/specs.js"></script>
+<script src="data/licenses.js"></script>
+<script src="data/compete.js"></script>
+
+<script>
+// ---- 機器イラスト（写真の代わりに形状を描く） ----
+const ART=(()=>{
+  const R=(x,y,w,h,c='b',r=3)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" class="a-${c}"/>`;
+  const C=(x,y,r,c='l')=>`<circle cx="${x}" cy="${y}" r="${r}" class="a-${c}"/>`;
+  const P=(d,c='s')=>`<path d="${d}" class="a-${c}"/>`;
+  const rep=(n,f)=>Array.from({length:n},(_,i)=>f(i)).join('');
+  const ports=(x,y,n,rows=2)=>rep(rows,r=>rep(n,i=>R(x+i*6.6+Math.floor(i/6)*2.5,y+r*5.6,5,4,'p',.6)));
+  const leds=(x,y,n)=>rep(n,i=>C(x+i*5,y,1.4,i%3==2?'w':'l'));
+  const unit=(y,h=20,np=12)=>R(10,y,140,h)+leds(16,y+h/2,3)+ports(36,y+h/2-4.8,np)+R(126,y+5,16,h-10,'p',1);
+  const k={
+    switch:()=>unit(39,22),
+    stack:()=>unit(20,19)+unit(41,19)+unit(62,19),
+    chassis:()=>R(32,6,96,88)+R(38,11,84,8,'p',1)+rep(6,i=>R(38,23+i*11,84,8,i==2||i==3?'d':'b',1)+C(44,27+i*11,1.4,i==2||i==3?'w':'l'))+rep(8,i=>R(52+i*8,25,5,4,'p',.5)),
+    router:()=>R(10,32,140,34)+leds(16,49,3)+R(34,38,40,10,'p',1)+R(34,51,40,10,'p',1)+R(78,38,40,10,'p',1)+R(78,51,40,10,'p',1)+ports(123,44,3,2),
+    edge:()=>R(28,40,104,28,'b',6)+leds(38,54,2)+ports(56,49,8)+P('M40 68v6M120 68v6'),
+    firewall:()=>R(10,34,140,30)+P('M28 40l9 3.5v6.5c0 5.5-4 9-9 11-5-2-9-5.5-9-11V43.5z','c')+ports(48,44,12)+R(132,40,12,18,'p',1),
+    ap:()=>R(46,16,68,68,'b',18)+R(56,26,48,48,'p',12)+C(80,50,3.2)+P('M122 22a18 18 0 0 1 16 16M122 12a28 28 0 0 1 26 26'),
+    server:()=>rep(2,j=>R(10,26+j*25,140,21)+rep(8,i=>R(16+i*11,30+j*25,9,13,'p',1))+leds(110,36.5+j*25,2)+R(122,30+j*25,22,13,'p',1)),
+    blade:()=>R(36,6,88,88)+rep(8,i=>R(42,12+i*9.6,76,7.4,i==1||i==5?'d':'b',1)+C(46,15.7+i*9.6,1.3,i==5?'w':'l')),
+    gpu:()=>R(10,20,140,60)+R(10,20,140,10,'p',3)+rep(5,i=>C(31+i*24.5,55,10,'p')+P(`M${31+i*24.5-7} 55h14M${31+i*24.5} 48v14`,'x'))+leds(16,25,3),
+    cloud:()=>P('M46 76h68a18 18 0 0 0 2-36 26 26 0 0 0-50-6 21 21 0 0 0-20 42z','b')+P('M62 60l18-12 18 12M80 48v-6','s')+C(62,60,4,'c')+C(98,60,4,'c')+C(80,42,4,'c'),
+    dash:()=>R(18,12,124,76,'b',6)+R(18,12,124,11,'p',6)+leds(26,17.5,3)+rep(6,i=>R(28+i*10,76-[14,22,18,30,26,36][i],6,[14,22,18,30,26,36][i],'c',1))+P('M96 66l10-10 8 6 10-16 8 4')+R(96,30,38,12,'p',2),
+    phone:()=>R(30,30,100,56,'b',8)+R(36,32,18,52,'p',8)+R(64,38,58,28,'d',3)+P('M70 58l10-8 8 5 12-10 8 4','x')+rep(9,i=>C(81+(i%3)*12,72+Math.floor(i/3)*5,1.8,'p')),
+    videobar:()=>R(18,8,124,66,'d',3)+rep(4,i=>R(24+(i%2)*57,14+Math.floor(i/2)*29,55,26,'t',2))+R(44,78,72,10,'b',5)+C(80,83,3,'c')+C(64,83,1.5,'l')+C(96,83,1.5,'p'),
+    board:()=>R(26,4,108,68,'d',4)+P('M40 50c10-20 20 10 30-8s22 14 30-4 14 6 20 0')+P('M66 72l-12 24M94 72l12 24M58 88h44')+C(80,9,1.5,'l'),
+    headset:()=>P('M44 64a36 36 0 0 1 72 0')+R(36,56,18,30,'b',8)+R(106,56,18,30,'b',8)+P('M45 86c4 8 14 10 26 8')+C(72,94,3,'c'),
+    camera:()=>R(44,24,72,12,'b',3)+P('M50 36h60v8a30 30 0 0 1-60 0z','b')+C(80,50,11,'d')+C(80,50,4,'c')+C(98,42,1.6),
+    sensor:()=>R(54,28,52,52,'b',14)+C(80,54,9,'p')+C(80,54,3,'c')+C(94,38,1.6)+P('M112 34a14 14 0 0 1 10 10M112 24a24 24 0 0 1 20 20'),
+    optic:()=>R(14,40,104,20,'b',2)+R(118,43,24,14,'p',2)+R(4,46,12,8,'c',2)+R(30,45,40,10,'p',1)+P('M80 50h28','s'),
+    rugged:()=>R(30,46,100,6,'p',1)+R(50,8,60,84,'b',4)+rep(7,i=>R(54+i*7.6,8,4,10,'p',1))+rep(8,i=>R(58+(i%2)*14,26+Math.floor(i/2)*9,11,7,'p',1))+leds(92,30,3)+R(90,40,16,40,'p',2),
+    shield:()=>P('M80 10l34 13v25c0 21-15 34-34 42-19-8-34-21-34-42V23z','b')+P('M64 50l11 11 22-24'),
+    key:()=>R(56,10,48,80,'b',9)+R(61,18,38,62,'d',3)+C(80,46,12,'c')+P('M74 46l4 4 8-9','x')+R(72,84,16,2,'p',1),
+    chip:()=>rep(6,i=>P(`M${58+i*9} 14v8M${58+i*9} 78v8M42 ${30+i*8}h8M110 ${30+i*8}h8`))+R(50,22,60,56,'b',6)+R(62,34,36,32,'c',4)+P('M70 50h20M80 40v20','x'),
+    graph:()=>R(14,14,132,72,'b',6)+P('M24 62l14-10 12 6 14-22 14 14 14-8 14 10 16-20')+rep(4,i=>R(24+i*8,72,30+((i*17)%40),3.6,i==2?'w':'p',1.5)),
+    globe:()=>C(80,50,34,'b')+P('M46 50h68M80 16v68M80 16c-18 18-18 50 0 68M80 16c18 18 18 50 0 68')+C(56,34,3.4,'w')+C(104,64,3.4,'l')+P('M56 34L104 64','s'),
+    agent:()=>R(30,20,100,62,'b',10)+C(62,46,7,'c')+C(98,46,7,'c')+P('M64 66c8 6 24 6 32 0')+P('M80 8v12')+C(80,7,3,'w')
+  };
+  return kind=>`<svg viewBox="0 0 160 100" aria-hidden="true">${(k[kind]||k.switch)()}</svg>`;
+})();
+// ファミリー見出し用の小アイコン（線画24px）
+const GLYPH={
+  net:'<rect x="3" y="9" width="18" height="6" rx="1.5"/><path d="M6 12h1M9 12h1M12 12h1"/>',
+  wls:'<path d="M5 10a10 10 0 0 1 14 0M8 13a6 6 0 0 1 8 0"/><circle cx="12" cy="16.5" r="1.2"/>',
+  sec:'<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/>',
+  col:'<rect x="3" y="5" width="18" height="11" rx="1.5"/><path d="M8 20h8M12 16v4"/>',
+  dc:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M8 7h8M8 11h8M8 15h8"/>',
+  obs:'<path d="M3 17l5-6 4 3 5-7 4 4"/><path d="M3 21h18"/>',
+  iot:'<rect x="7" y="3" width="10" height="18" rx="1.5"/><path d="M4 12h3M17 12h3M10 7h4"/>',
+  sp:'<circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c-3 3-3 13 0 16M12 4c3 3 3 13 0 16"/>',
+  ai:'<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/>'
+};
+const glyph=id=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${GLYPH[id]||''}</svg>`;
+
+// ---- 設置場所 ----
+const ZONES={user:'ユーザー・端末',campus:'オフィス・キャンパス',branch:'支店・拠点WAN',dc:'データセンター',cloud:'クラウド・SaaS',sp:'通信事業者網',ot:'工場・現場'};
+// ---- ファミリー ----
+const FAMILIES=[
+  {id:'net',n:'エンタープライズ ネットワーキング',en:'Enterprise Networking',d:'キャンパスLANのスイッチ、拠点ルーター、SD-WAN、そしてそれらを一元管理するソフトウェア。オンプレ管理のCatalystとクラウド管理のMerakiが二本柱です。'},
+  {id:'wls',n:'ワイヤレス',en:'Wireless',d:'Wi-Fi 6/6E/7アクセスポイント、無線LANコントローラ、位置情報サービス。Wi-Fi 7世代からCatalyst/Merakiどちらの管理でも使える統一モデルになりました。'},
+  {id:'sec',n:'セキュリティ',en:'Security',d:'ファイアウォール、ゼロトラスト（SSE/SASE）、ID・多要素認証、検知と対応（XDR/SIEM）、AIアプリの保護まで。Splunkの統合でSOC領域も拡大しています。'},
+  {id:'col',n:'コラボレーション',en:'Collaboration',d:'Webexのクラウドサービス（会議・通話・コンタクトセンター）と、会議室・デスク向けのビデオ端末、IP電話、ヘッドセット。'},
+  {id:'dc',n:'データセンター & コンピュート',en:'Data Center & Compute',d:'DCスイッチ（Nexus）、サーバー（UCS）、SANスイッチ、そしてGPUを積んだAIインフラ。Intersight / Nexus Dashboardで運用します。'},
+  {id:'obs',n:'オブザーバビリティ',en:'Observability',d:'ログ分析のSplunk、アプリ性能監視、インターネット経路の可視化（ThousandEyes）。ネットワークからアプリまで一続きで見る領域です。'},
+  {id:'iot',n:'IoT・産業 & 物理環境',en:'Industrial IoT & Physical',d:'工場・プラント・交通向けの耐環境スイッチ/ルーター、無線バックホール、OTセキュリティ。オフィス向けのクラウドカメラやセンサーもここにまとめました。'},
+  {id:'sp',n:'サービスプロバイダー & 光',en:'Service Provider & Optical',d:'通信事業者・大規模クラウド事業者の基幹網を支えるルーター、光伝送、コヒーレント光モジュール、独自チップSilicon One。'}
+];
+// ---- 製品 ----
+// f:ファミリー n:名称 t:一言 k:イラスト z:設置場所 m:代表型番 s:[シリーズ,説明] d:概要 u:用途 r:関連
+const PRODUCTS=[
+  {id:'cat9k',f:'net',n:'Catalyst 9000 スイッチ',t:'キャンパスLANの標準スイッチ。アクセスからコアまで',k:'stack',z:['campus','branch'],m:['C9200','C9300','C9400','C9500','C9600'],
+   s:[['C9200 / 9200CX','小規模拠点・エントリーのアクセス'],['C9300 / 9300X','主力のスタック型アクセス。UPOE+で高出力PoE'],['C9400','シャーシ型アクセス。冗長性重視のフロア向け'],['C9500 / C9600','ディストリビューション・コア']],
+   d:'IOS XEを搭載したキャンパス向けスイッチの中核シリーズです。Catalyst Centerでのオンプレ管理に加え、一部モデルはMerakiダッシュボードからクラウド管理もできます。',
+   u:['フロアのアクセススイッチ（PC・AP・電話・カメラにPoE給電）','建物間をつなぐコア/ディストリビューション','SD-Accessによるセグメンテーション'],r:['smartsw','catcenter','ise','cat-wifi7']},
+  {id:'smartsw',f:'net',n:'スマートスイッチ（C9350 / C9610）',t:'Silicon One搭載。セキュリティ処理をスイッチ上で動かす新世代',k:'chassis',z:['campus'],m:['C9350','C9610'],
+   s:[['C9350','固定型アクセス。高密度PoEとマルチギガ'],['C9610','モジュラー型コア。大規模キャンパス向け']],
+   d:'2025年に登場した次世代キャンパススイッチです。独自チップSilicon Oneを採用し、スイッチ内の計算資源でHypershieldなどのセキュリティ機能を動かせる設計になっています。',
+   u:['AI時代の帯域増に備えたキャンパス更改','ネットワーク内での分散セキュリティ'],r:['cat9k','hypershield','siliconone']},
+  {id:'meraki-ms',f:'net',n:'Meraki MS スイッチ',t:'ブラウザだけで設定・監視するクラウド管理スイッチ',k:'switch',z:['campus','branch'],m:['MS130','MS150','MS390','C9300-M'],
+   d:'Merakiダッシュボードからゼロタッチで展開・管理できるスイッチです。多拠点に同じ設定を配りたい小売・教育・中堅企業でよく使われます。',
+   u:['IT担当者が少ない多拠点の一括管理','店舗・学校のアクセススイッチ'],r:['meraki-dash','meraki-mr','meraki-mx']},
+  {id:'cat8k',f:'net',n:'Catalyst 8000 エッジ',t:'SD-WAN対応の拠点・WANエッジルーター',k:'router',z:['branch','dc','cloud'],m:['C8200','C8300','C8500','C8000V'],
+   s:[['C8200 / C8300','支店・中規模拠点のルーター（ISR 4000の後継）'],['C8500','本社・DCのWAN集約（ASR 1000の後継）'],['C8000V','AWS/Azure等で動く仮想ルーター']],
+   d:'Catalyst SD-WANのエッジとして動くルーター群です。従来のISR/ASRの後継にあたり、5G/LTEモジュールや音声ゲートウェイ機能も持てます。',
+   u:['支店のインターネット/閉域網接続','本社・DCでのWAN回線集約','クラウドへの仮想ルーター配置'],r:['sdwan','isr1k','te']},
+  {id:'isr1k',f:'net',n:'ISR 1000 ルーター',t:'小規模拠点向けのコンパクトなルーター',k:'edge',z:['branch'],m:['C1111','C1121','C1161','C1131'],
+   d:'デスクトップ型の小型ルーターです。SD-WANにも対応し、LTEやWi-Fi内蔵モデルもあります。',
+   u:['小規模店舗・営業所のWAN接続','閉域網のバックアップ回線'],r:['cat8k','sdwan']},
+  {id:'sdwan',f:'net',n:'Catalyst SD-WAN',t:'拠点WANを集中管理・最適化するソフトウェア',k:'cloud',z:['branch','cloud'],m:['Manager','Controller','Validator'],
+   s:[['Manager（旧vManage）','設定・監視のGUI'],['Controller（旧vSmart）','経路・ポリシーの配布'],['Validator（旧vBond）','機器の認証と参加']],
+   d:'複数の回線（閉域網・インターネット・5G）をまとめて使い、アプリごとに最適な経路を自動で選ぶWAN基盤です。Secure AccessなどのSSEと組み合わせてSASE構成にできます。',
+   u:['MPLSからインターネット回線中心への移行','SaaS（Microsoft 365等）の通信最適化','拠点の一括設定'],r:['cat8k','secure-access','te']},
+  {id:'catcenter',f:'net',n:'Catalyst Center',t:'キャンパスネットワークの自動化と保証（旧DNA Center）',k:'dash',z:['campus','branch'],m:['アプライアンス','仮想版','SD-Access'],
+   d:'スイッチ・無線・ルーターの設定を自動化し、利用者の体験を分析して問題箇所を示す管理基盤です。SD-Accessのポリシー制御もここから行います。',
+   u:['数百台規模のスイッチの一括設定・更新','無線品質のトラブルシュート'],r:['cat9k','wlc9800','ise']},
+  {id:'meraki-dash',f:'net',n:'Meraki ダッシュボード',t:'Meraki製品を一画面で管理するクラウド',k:'dash',z:['cloud'],m:['ライセンス','API','Systems Manager'],
+   d:'Merakiのスイッチ・AP・セキュリティアプライアンス・カメラ・センサーを、Webブラウザだけでまとめて管理するクラウドサービスです。Catalyst製品の一部もここに取り込めます。',
+   u:['多拠点の可視化と設定配布','端末管理（Systems Manager）'],r:['meraki-ms','meraki-mr','meraki-mx']},
+
+  {id:'cat-wifi7',f:'wls',n:'Wi-Fi 7 アクセスポイント',t:'Catalyst/Merakiどちらでも管理できる統一AP',k:'ap',z:['campus','branch'],m:['CW9172','CW9176','CW9178'],
+   s:[['CW9172','中密度オフィス向けのエントリー'],['CW9176','主力モデル。6GHz帯対応'],['CW9178','高密度・大規模会場向けの最上位']],
+   d:'Wi-Fi 7対応のアクセスポイントです。同じハードウェアでCatalyst 9800コントローラ管理とMerakiクラウド管理を選べます。',
+   u:['オフィスの無線LAN更改','講堂・会議場などの高密度環境'],r:['wlc9800','spaces','cat9k']},
+  {id:'cat9100',f:'wls',n:'Catalyst 9100 AP',t:'Wi-Fi 6 / 6E 世代のアクセスポイント',k:'ap',z:['campus','branch'],m:['C9115','C9120','C9130','C9136','C9166'],
+   d:'Wi-Fi 6/6E世代のCatalyst APです。屋外モデルや産業用モデルもあり、既存環境で広く使われています。',
+   u:['既存無線LANの拡張','6GHz帯（6E）の導入'],r:['wlc9800','cat-wifi7']},
+  {id:'meraki-mr',f:'wls',n:'Meraki MR アクセスポイント',t:'クラウド管理のWi-Fi 6/6E AP',k:'ap',z:['campus','branch'],m:['MR36','MR46','MR57','MR78'],
+   d:'Merakiダッシュボードで管理するAPです。ゲストWi-Fi、来訪者分析、店舗向けの位置情報分析が簡単に設定できます。',
+   u:['店舗・ホテルのゲストWi-Fi','多拠点の無線を一元管理'],r:['meraki-dash','meraki-ms']},
+  {id:'wlc9800',f:'wls',n:'Catalyst 9800 ワイヤレスコントローラ',t:'多数のAPを集中制御する無線LANコントローラ',k:'router',z:['campus','dc','cloud'],m:['9800-L','9800-40','9800-80','9800-CL'],
+   d:'APの設定・ローミング・認証を集中管理する装置です。アプライアンス型のほか、仮想版（9800-CL）やCatalyst 9300に組み込む方式も選べます。',
+   u:['数千台規模のAP管理','拠点ごとの組み込み型コントローラ'],r:['cat-wifi7','cat9100','catcenter']},
+  {id:'spaces',f:'wls',n:'Cisco Spaces',t:'Wi-FiやBLEを使った屋内位置情報・空間分析',k:'dash',z:['campus','cloud'],m:['位置分析','オフィス利用率','IoTゲートウェイ'],
+   d:'APやセンサーのデータから、人の滞在状況や会議室の使われ方を可視化するクラウドサービスです。',
+   u:['オフィスの座席・会議室の利用率分析','店舗の来店分析'],r:['cat-wifi7','meraki-mt']},
+  {id:'sfw',f:'sec',n:'Secure Firewall',t:'次世代ファイアウォール（NGFW）。拠点からDCまで',k:'firewall',z:['branch','dc','cloud'],m:['200','1200','3100','4200','6100','Threat Defense Virtual'],
+   s:[['200 / 1200','支店・小規模拠点。SD-WAN機能も統合'],['3100','中規模拠点・インターネットエッジ'],['4200 / 6100','データセンター・大規模環境'],['Threat Defense Virtual','AWS/Azure/GCP・仮想基盤向け']],
+   d:'IPS・URLフィルタ・マルウェア対策を統合したファイアウォールです。Threat Defense（旧FTD）またはASAソフトウェアで動き、Firewall Management CenterやSecurity Cloud Controlで管理します。',
+   u:['インターネット出口の防御','DC内のセグメント間制御','リモートアクセスVPNの終端'],r:['scc','secure-access','hypershield']},
+  {id:'meraki-mx',f:'sec',n:'Meraki MX セキュリティ & SD-WAN',t:'UTMとSD-WANを1台にまとめたクラウド管理アプライアンス',k:'edge',z:['branch'],m:['MX67','MX75','MX85','MX105','MX250'],
+   d:'ファイアウォール、IPS、コンテンツフィルタ、拠点間VPN（Auto VPN）をダッシュボードから設定できる拠点向け装置です。',
+   u:['店舗・営業所の出口セキュリティ','数クリックでの拠点間VPN'],r:['meraki-dash','meraki-ms','sdwan']},
+  {id:'hypershield',f:'sec',n:'Cisco Hypershield',t:'AIが運用する分散型セキュリティ',k:'shield',z:['dc','cloud','campus'],m:['eBPFエージェント','スマートスイッチ','DPU'],
+   d:'サーバー上のエージェントやスマートスイッチなど、ネットワークのあちこちにセキュリティの実行点を置き、AIがポリシーの作成・検証・適用を支援する仕組みです。脆弱性の修正が終わるまでの暫定防御（シールド）にも使えます。',
+   u:['DC内の横移動（ラテラルムーブメント）防止','パッチ適用までの暫定防御'],r:['smartsw','sfw']},
+  {id:'scc',f:'sec',n:'Security Cloud Control',t:'ファイアウォール群のクラウド統合管理',k:'dash',z:['cloud'],m:['FW管理','ポリシー分析','AI Assistant'],
+   d:'Secure Firewallやクラウドのセキュリティポリシーを一つの画面で管理するSaaSです（旧Cisco Defense Orchestrator）。',
+   u:['複数台のFWポリシーの統一','設定ミスや重複ルールの検出'],r:['sfw','hypershield']},
+  {id:'secure-access',f:'sec',n:'Cisco Secure Access',t:'ゼロトラストのクラウドセキュリティ（SSE）',k:'cloud',z:['cloud','user'],m:['ZTNA','SWG','CASB','FWaaS','DLP'],
+   d:'社内アプリへのゼロトラストアクセス、Webゲートウェイ、CASB、クラウドFWをまとめて提供するSSEです。SD-WANと組み合わせればSASEになります。',
+   u:['VPNの置き換え（ZTNA）','在宅勤務者のWeb通信保護','生成AIサービス利用の制御'],r:['umbrella','duo','sdwan','client']},
+  {id:'umbrella',f:'sec',n:'Cisco Umbrella',t:'DNSで危険なサイトへの接続を止める',k:'globe',z:['cloud','user','branch'],m:['DNS Security','SIG'],
+   d:'名前解決（DNS）の段階でマルウェア配布サイトやフィッシングサイトへの接続をブロックするクラウドサービスです。導入が手軽で、拠点や在宅端末をまとめて守れます。',
+   u:['全拠点の最初の防御層','ゲストWi-Fiのフィルタリング'],r:['secure-access','meraki-mx']},
+  {id:'duo',f:'sec',n:'Duo',t:'多要素認証とデバイス信頼性の確認',k:'key',z:['user','cloud'],m:['MFA','パスワードレス','SSO','Device Trust','ITDR'],
+   d:'ログイン時にスマホのプッシュ通知や生体認証で本人確認を行い、端末の安全性もチェックするID保護サービスです。ID基盤への攻撃検知（Identity Threat Detection）も備えます。',
+   u:['VPN・SaaSへのログイン強化','パスワードレス化','管理されていない端末のアクセス制限'],r:['secure-access','ise','client']},
+  {id:'ise',f:'sec',n:'Identity Services Engine (ISE)',t:'社内ネットワークへの接続を誰が・何で行うか制御',k:'server',z:['campus','dc'],m:['SNS-3700','仮想版','TrustSec'],
+   d:'有線・無線・VPN接続時に802.1Xなどで利用者と端末を認証し、役割に応じたアクセス権を割り当てるNAC（ネットワークアクセス制御）製品です。',
+   u:['持ち込み端末・IoT機器の接続制御','部署ごとのセグメンテーション','ゲスト登録'],r:['cat9k','catcenter','duo']},
+  {id:'xdr',f:'sec',n:'Cisco XDR',t:'複数製品のアラートをつなげて調査・対応',k:'dash',z:['cloud'],m:['インシデント相関','自動対応','Talos脅威情報'],
+   d:'エンドポイント・メール・ネットワーク・クラウドの検知結果を相関分析し、攻撃の全体像と対応手順を示すサービスです。脅威情報は研究組織Talosが提供します。',
+   u:['SOCでのインシデント調査の短縮','封じ込め操作の自動化'],r:['client','email','splunk-es']},
+  {id:'client',f:'sec',n:'Secure Client & Secure Endpoint',t:'端末側のVPNクライアントとEDR',k:'shield',z:['user'],m:['Secure Client（旧AnyConnect）','Secure Endpoint'],
+   d:'Secure ClientはVPN・ZTNA接続を担う端末エージェント、Secure Endpointはマルウェア検知と隔離を行うEDRです。',
+   u:['リモートアクセスVPN','PCのマルウェア対策と隔離'],r:['secure-access','xdr','sfw']},
+  {id:'email',f:'sec',n:'Secure Email',t:'メール経由の攻撃（フィッシング・BEC）対策',k:'cloud',z:['cloud'],m:['Threat Defense','Gateway'],
+   d:'Microsoft 365などのメールを検査し、フィッシング、ビジネスメール詐欺、添付ファイル型マルウェアを防ぐサービスです。',
+   u:['M365メールの追加防御','なりすましメール対策'],r:['xdr']},
+  {id:'aidefense',f:'sec',n:'AI Defense',t:'社内で使う・作るAIアプリの安全性を守る',k:'agent',z:['cloud','dc'],m:['AIアセット可視化','モデル検証','ランタイム保護'],
+   d:'社員が使う生成AIサービスの把握、自社AIモデルの脆弱性検証、プロンプトインジェクションや情報漏えいを防ぐ実行時ガードレールを提供します。',
+   u:['シャドーAIの把握','自社LLMアプリのレッドチーミング'],r:['secure-access','ai-pod']},
+  {id:'splunk-es',f:'sec',n:'Splunk Enterprise Security',t:'SIEM。ログからセキュリティ脅威を検知',k:'dash',z:['cloud','dc'],m:['SIEM','SOAR','UEBA'],
+   d:'あらゆるログを集めて脅威を検知・分析するSIEMです。SOAR（自動対応）と組み合わせてSOC業務を効率化します。',
+   u:['SOCの中核基盤','コンプライアンス監査ログ'],r:['splunk','xdr']},
+  {id:'webex',f:'col',n:'Webex Suite',t:'会議・メッセージ・ウェビナーのクラウド',k:'cloud',z:['cloud','user'],m:['Meetings','Messaging','Webinars','Events','AI Assistant'],
+   d:'ビデオ会議、チャット、大規模ウェビナーを一つのアプリで提供するクラウドサービスです。AI Assistantによる要約や翻訳字幕も使えます。',
+   u:['社内外のオンライン会議','全社集会・ウェビナー配信'],r:['room','calling','board']},
+  {id:'calling',f:'col',n:'Webex Calling / Unified CM',t:'クラウドPBXとオンプレ型の電話基盤',k:'globe',z:['cloud','dc'],m:['Webex Calling','Unified CM','Dedicated Instance'],
+   d:'Webex Callingはクラウド型の電話サービス、Unified Communications Manager（CUCM）はオンプレ型の呼制御サーバーです。専用クラウド版（Dedicated Instance）もあります。',
+   u:['PBXのクラウド移行','固定電話とスマホ内線の統合'],r:['phones','webex','cc']},
+  {id:'cc',f:'col',n:'Webex Contact Center',t:'AIエージェントを組み込んだクラウド型コールセンター',k:'agent',z:['cloud'],m:['Contact Center','AI Agent','Customer Assist'],
+   d:'電話・チャット・SNSの問い合わせを一元的に受けるクラウド型コンタクトセンターです。AIエージェントによる自動応答やオペレーター支援を備えます。',
+   u:['コールセンターのクラウド化','一次対応の自動化'],r:['calling','headsets']},
+  {id:'room',f:'col',n:'Room シリーズ（会議室端末）',t:'カメラ・マイク・スピーカー一体のビデオバー',k:'videobar',z:['campus'],m:['Room Bar','Room Bar Pro','Room Kit EQ','Room Kit EQX','Room Vision PTZ'],
+   s:[['Room Bar','小〜中会議室向けのオールインワン'],['Room Bar Pro','中会議室。デュアルカメラ'],['Room Kit EQ / EQX','大会議室・役員室向けのモジュール構成']],
+   d:'会議室に設置するビデオ会議端末です。話者を自動で追うカメラや雑音除去を備え、WebexだけでなくMicrosoft TeamsやZoomの会議室としても使えます。',
+   u:['会議室のビデオ会議化','Teams Rooms端末としての導入'],r:['board','webex','spaces']},
+  {id:'board',f:'col',n:'Board / Desk シリーズ',t:'タッチ式ボードと個人用ビデオ端末',k:'board',z:['campus','user'],m:['Board Pro G2','Desk Pro','Desk','Desk Mini'],
+   d:'Board Proはホワイトボード機能付きの大型タッチ端末、Deskシリーズは個人席や在宅向けのビデオ会議端末です。',
+   u:['ハドルルームでの共同作業','役員席・在宅の高品質ビデオ会議'],r:['room','webex']},
+  {id:'phones',f:'col',n:'IP電話機',t:'デスクフォンと構内無線電話',k:'phone',z:['campus','user'],m:['Desk Phone 9800','IP Phone 8800','Wireless Phone 840/860'],
+   d:'Webex CallingやUnified CMにつなぐ固定電話機と、病院・工場などで使うWi-Fi電話機です。',
+   u:['オフィスの内線・外線','病院・倉庫の構内無線通話'],r:['calling']},
+  {id:'headsets',f:'col',n:'ヘッドセット',t:'在宅・オフィス・コンタクトセンター向け',k:'headset',z:['user'],m:['320','520','560','730','950'],
+   d:'有線・無線のヘッドセットです。ノイズキャンセリング付きの上位モデルから、コンタクトセンター向けの業務用まで揃います。',
+   u:['オンライン会議','コンタクトセンター業務'],r:['webex','cc']},
+
+  {id:'nexus9k',f:'dc',n:'Nexus 9000 スイッチ',t:'データセンターの主力スイッチ',k:'chassis',z:['dc'],m:['9300','9500','9800','9400'],
+   s:[['9300','固定型。リーフ/スパイン、ToR'],['9500 / 9800','モジュラー型の大規模スパイン'],['9400','中規模向けモジュラー']],
+   d:'DC向けの高速スイッチです。NX-OSによる通常運用か、ACIモードでのポリシー型ファブリックを選べます。400G/800Gのポートを持つモデルがあり、AIクラスタのGPU間接続にも使われます。',
+   u:['サーバー収容（ToR）とスパイン','GPUクラスタのバックエンドネットワーク'],r:['ndash','hyperfabric','ucs-x']},
+  {id:'ndash',f:'dc',n:'Nexus Dashboard / ACI',t:'DCファブリックの自動化・可視化',k:'dash',z:['dc'],m:['Nexus Dashboard','APIC','Insights'],
+   d:'複数のDCファブリックを一元管理し、設定変更の事前検証や異常検知を行う管理基盤です。ACI環境ではAPICがポリシーを配布します。',
+   u:['DCネットワークの変更管理','マルチサイトの統合運用'],r:['nexus9k']},
+  {id:'hyperfabric',f:'dc',n:'Nexus HyperFabric',t:'クラウドから設計・運用するDCファブリック',k:'cloud',z:['dc','cloud'],m:['HyperFabric','HyperFabric AI'],
+   d:'DCネットワークの設計から配線指示、運用までをクラウドの管理画面で行うサービスです。AIクラスタ向けの構成（HyperFabric AI）も用意されています。',
+   u:['専任者が少ない組織でのDC構築','AI基盤のネットワークを素早く立ち上げ'],r:['nexus9k','ai-pod']},
+  {id:'ucs-x',f:'dc',n:'UCS X-Series',t:'モジュラー型サーバー。CPUとGPUを柔軟に組合せ',k:'blade',z:['dc'],m:['X9508','X210c','X215c','X440p','X580p'],
+   d:'7Uシャーシにコンピュートノードと PCIe（GPU）ノードを差して使うモジュラー型サーバーです。Intersightで管理します。',
+   u:['仮想化基盤（VMware等）','推論用GPUの追加'],r:['intersight','ucs-c','nexus9k']},
+  {id:'ucs-c',f:'dc',n:'UCS C-Series ラックサーバー',t:'汎用の1U/2Uラックサーバー',k:'server',z:['dc','branch'],m:['C220 M8','C240 M8','C225 M8','C245 M8'],
+   d:'Intel XeonまたはAMD EPYCを搭載するラックマウント型サーバーです。単体運用からクラスタ構成まで使えます。',
+   u:['業務アプリ・データベース','拠点のエッジサーバー'],r:['intersight','ucs-x']},
+  {id:'ai-pod',f:'dc',n:'AIサーバー / AI POD',t:'GPUサーバーと検証済みAIインフラ構成',k:'gpu',z:['dc'],m:['UCS C845A M8','UCS C885A M8','AI POD','Secure AI Factory'],
+   d:'NVIDIA GPUを複数搭載したAI向けサーバーと、サーバー・ネットワーク・ストレージを組み合わせた検証済み構成（AI POD）です。NVIDIAとの共同設計「Secure AI Factory」も展開しています。',
+   u:['社内LLMの学習・推論基盤','RAG・推論のオンプレ運用'],r:['nexus9k','hyperfabric','aidefense']},
+  {id:'intersight',f:'dc',n:'Intersight',t:'サーバーとインフラを管理するSaaS',k:'dash',z:['cloud','dc'],m:['Infrastructure Service','Workload Optimizer'],
+   d:'UCSサーバーや対応ストレージ、Kubernetes基盤をクラウドから一括管理します。ファームウェア更新や構成の標準化、資源の最適化を行えます。',
+   u:['サーバーのライフサイクル管理','複数拠点のサーバーの一元監視'],r:['ucs-x','ucs-c']},
+  {id:'mds',f:'dc',n:'MDS 9000 SANスイッチ',t:'ストレージをつなぐファイバーチャネル',k:'switch',z:['dc'],m:['MDS 9124V','MDS 9148V','MDS 9396V','MDS 9700'],
+   d:'サーバーとストレージを接続するファイバーチャネル（最大64G）のスイッチです。ミッションクリティカルな基幹システムで使われます。',
+   u:['基幹DBのストレージネットワーク'],r:['ucs-x','nexus9k']},
+  {id:'splunk',f:'obs',n:'Splunk Platform',t:'あらゆるマシンデータを集めて検索・分析',k:'dash',z:['cloud','dc'],m:['Splunk Cloud Platform','Splunk Enterprise'],
+   d:'サーバー・ネットワーク・アプリのログを集約し、検索言語SPLで分析・可視化するデータ基盤です。クラウド版とオンプレ版があり、セキュリティ製品の土台にもなります。',
+   u:['障害時のログ横断検索','監査・コンプライアンス対応'],r:['splunk-es','o11y','itsi']},
+  {id:'o11y',f:'obs',n:'Splunk Observability Cloud',t:'インフラ・アプリ・ユーザー体験をリアルタイム監視',k:'graph',z:['cloud'],m:['Infrastructure Monitoring','APM','RUM','Synthetics'],
+   d:'OpenTelemetryを使ってメトリクス・トレース・ログを集め、クラウドネイティブなシステムの性能をリアルタイムに監視するSaaSです。',
+   u:['マイクロサービスの遅延原因の特定','Webサイトの体感速度監視'],r:['appd','te','splunk']},
+  {id:'appd',f:'obs',n:'Splunk AppDynamics',t:'業務アプリの性能をビジネス指標と結びつける',k:'graph',z:['dc','cloud'],m:['APM','Business iQ','Database Monitoring'],
+   d:'Javaや.NETなどの業務アプリの処理を追跡し、どの処理が売上や顧客体験に影響しているかを示すAPMです。オンプレ版も選べます。',
+   u:['基幹・EC系アプリの性能監視','リリース後の影響確認'],r:['o11y','splunk']},
+  {id:'te',f:'obs',n:'ThousandEyes',t:'インターネット・クラウド・SaaSまでの経路を可視化',k:'globe',z:['cloud','branch','user'],m:['Cloud Agent','Enterprise Agent','Endpoint Agent','Internet Insights'],
+   d:'世界中のエージェントから通信経路を測定し、遅延の原因が自社網・ISP・クラウド・SaaSのどこにあるかを示します。CatalystやMerakiの機器にエージェントを組み込めます。',
+   u:['「Teamsが遅い」の原因切り分け','ISP・クラウド障害の早期把握'],r:['cat8k','sdwan','o11y']},
+  {id:'itsi',f:'obs',n:'Splunk ITSI',t:'AIOps。サービス単位で健全性を監視',k:'dash',z:['cloud','dc'],m:['Service Analyzer','Event Analytics'],
+   d:'大量のアラートをまとめて重要なものに絞り、業務サービスごとの健全性スコアで状況を示すAIOps製品です。',
+   u:['アラート疲れの削減','障害予兆の検知'],r:['splunk','o11y']},
+
+  {id:'ie',f:'iot',n:'Catalyst IE 産業用スイッチ',t:'工場・変電所・道路で動く耐環境スイッチ',k:'rugged',z:['ot'],m:['IE3100','IE3300','IE3400','IE9300'],
+   d:'広い温度範囲・振動に耐えるDINレール型やラック型のスイッチです。産業用プロトコルに対応し、Cyber Visionのセンサーを内蔵できます。',
+   u:['工場ラインの機器接続','変電所・交通インフラ'],r:['cybervision','ir','urwb']},
+  {id:'ir',f:'iot',n:'産業用ルーター',t:'現場設備や車両をLTE/5Gでつなぐ',k:'edge',z:['ot','sp'],m:['IR1100','IR1800','IR8100','IR8340'],
+   d:'屋外キャビネット・車両・電力設備に置ける頑丈なルーターです。セルラー回線やエッジでのアプリ実行に対応します。',
+   u:['車両・鉄道のネットワーク','遠隔設備の監視'],r:['ie','iotcc']},
+  {id:'urwb',f:'iot',n:'URWB / 産業用無線',t:'移動体向けの高信頼な無線バックホール',k:'ap',z:['ot'],m:['IW9165','IW9167','URWB'],
+   d:'Ultra-Reliable Wireless Backhaul（URWB）は、無人搬送車・鉱山車両・港湾クレーンなど高速移動する機器を途切れずつなぐ無線技術です。',
+   u:['AGV・AMRの無線化','港湾・鉱山の移動体通信'],r:['ie']},
+  {id:'cybervision',f:'iot',n:'Cyber Vision',t:'OT（制御系）ネットワークの資産可視化とセキュリティ',k:'shield',z:['ot'],m:['センサー','Center'],
+   d:'産業用スイッチに組み込んだセンサーで制御機器の通信を解析し、資産一覧や脆弱性、異常な通信を表示します。',
+   u:['工場のOT資産棚卸し','IT/OTのセグメンテーション設計'],r:['ie','ise','sfw']},
+  {id:'iotcc',f:'iot',n:'IoT Control Center',t:'セルラーIoT回線をまとめて管理',k:'cloud',z:['sp','cloud'],m:['回線管理','自動化ルール'],
+   d:'通信事業者経由で提供される、数百万規模のIoT SIM回線を管理するプラットフォームです。',
+   u:['コネクテッドカー・スマートメーターの回線運用'],r:['ir']},
+  {id:'meraki-mv',f:'iot',n:'Meraki MV スマートカメラ',t:'クラウド管理の防犯カメラ。録画はカメラ内',k:'camera',z:['campus','branch'],m:['MV13','MV33','MV63','MV93'],
+   d:'録画装置（NVR）が不要で、映像はカメラ内に保存しブラウザから確認できる防犯カメラです。人や車両の検知・カウントも行えます。',
+   u:['店舗・オフィスの防犯','来訪者数のカウント'],r:['meraki-mt','meraki-dash']},
+  {id:'meraki-mt',f:'iot',n:'Meraki MT センサー',t:'温度・湿度・ドア・空気品質を監視',k:'sensor',z:['campus','dc','branch'],m:['MT10','MT11','MT12','MT14','MT20','MT40'],
+   d:'電池駆動の小型センサーで、サーバールームの温度や冷蔵庫、ドアの開閉、空気品質などを監視し、異常をすぐ通知します。',
+   u:['サーバールームの温度監視','食品の保冷管理'],r:['meraki-mv','spaces']},
+
+  {id:'c8000',f:'sp',n:'Cisco 8000 シリーズ',t:'Silicon One搭載の大容量ルーター',k:'chassis',z:['sp','dc'],m:['8100','8200','8800'],
+   d:'通信事業者のコア網や大規模クラウド事業者のDC間・AIクラスタ接続に使う高性能ルーターです。IOS XRで動作します。',
+   u:['キャリアのコア/ピアリング','ハイパースケーラーのDC間接続'],r:['siliconone','acacia','crosswork']},
+  {id:'ncs',f:'sp',n:'NCS 500 / 5500 / 5700',t:'アクセス〜集約網のルーター',k:'router',z:['sp'],m:['NCS 540','NCS 5500','NCS 5700'],
+   d:'モバイル基地局のバックホールや法人向け回線の集約に使うルーター群です。5Gのタイミング同期にも対応します。',
+   u:['5Gモバイルバックホール','メトロ/集約網'],r:['asr9k','c8000']},
+  {id:'asr9k',f:'sp',n:'ASR 9000',t:'事業者エッジの定番ルーター',k:'chassis',z:['sp'],m:['ASR 9902','ASR 9903','ASR 9906','ASR 9910'],
+   d:'通信事業者のPE（エッジ）ルーターとして長く使われているシリーズです。ブロードバンド収容（BNG）や法人VPNを提供します。',
+   u:['法人VPNサービスの提供','ブロードバンド加入者の収容'],r:['ncs','c8000']},
+  {id:'siliconone',f:'sp',n:'Cisco Silicon One',t:'ルーターとスイッチ共通の独自チップ',k:'chip',z:['sp','dc','campus'],m:['G200','Q200','A100'],
+   d:'ルーティングとスイッチングを一つのアーキテクチャで扱うCisco独自のネットワークプロセッサです。Cisco 8000、Nexus 9000の一部、スマートスイッチに搭載されています。',
+   u:['AIクラスタ向け51.2Tbps級スイッチ','通信事業者ルーター'],r:['c8000','smartsw','nexus9k']},
+  {id:'acacia',f:'sp',n:'Acacia コヒーレント光モジュール',t:'ルーターに直接挿す長距離光伝送',k:'optic',z:['sp','dc'],m:['400G ZR/ZR+','800G ZR/ZR+','Bright ZR+'],
+   d:'光伝送装置の機能を小型のプラガブルモジュールに収めたものです。ルーターに直接挿してDC間・都市間をつなぐ「Routed Optical Networking」を実現します。',
+   u:['DC間接続（DCI）','光伝送装置の削減'],r:['c8000','ncs1k']},
+  {id:'ncs1k',f:'sp',n:'NCS 1000 光伝送',t:'大容量の波長多重（DWDM）プラットフォーム',k:'router',z:['sp'],m:['NCS 1004','NCS 1010','NCS 1014'],
+   d:'光ファイバー1本で多数の波長を束ねて送る伝送装置です。長距離・海底ケーブル接続や事業者間の大容量回線に使われます。',
+   u:['都市間・長距離伝送','DCI'],r:['acacia','crosswork']},
+  {id:'crosswork',f:'sp',n:'Crosswork',t:'事業者ネットワークの自動化スイート',k:'dash',z:['sp'],m:['Network Controller','Planning','Hierarchical Controller'],
+   d:'大規模なIP/光ネットワークの設計・設定・監視を自動化するソフトウェア群です。',
+   u:['サービス開通の自動化','トラフィック最適化'],r:['c8000','ncs1k']},
+];
+// ---- アプリ ----
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const FAM=Object.fromEntries(FAMILIES.map(f=>[f.id,f]));
+const BYID=Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
+const col=f=>`var(--f-${f})`;
+const norm=s=>String(s).normalize('NFKC').toLowerCase();
+// 追加データ（別ファイル）。読み込めなくても本体は動くようにする
+const AL=typeof ALIASES!=='undefined'?ALIASES:[],SP=typeof SPECS!=='undefined'?SPECS:{},LI=typeof LICENSES!=='undefined'?LICENSES:{},CO=typeof COMPETE!=='undefined'?COMPETE:{};
+PRODUCTS.forEach(p=>{
+  p._al=AL.filter(a=>a.id===p.id);
+  p._q=norm([p.n,p.t,p.d,(p.m||[]).join(' '),(p.s||[]).flat().join(' '),(p.u||[]).join(' '),FAM[p.f].n,FAM[p.f].en,p.z.map(z=>ZONES[z]).join(' '),
+    p._al.map(a=>a.o).join(' '),SP[p.id]?SP[p.id].rows.map(r=>r[0]).join(' '):''].join(' '));
+});
+const state={fam:'all',zone:null,q:'',view:'card',tab:'ov'};
+try{const v=localStorage.getItem('atlas-view');if(['card','tree','alias'].includes(v))state.view=v}catch(e){}
+
+const match=p=>(state.fam==='all'||p.f===state.fam)&&(!state.zone||p.z.includes(state.zone))&&(!state.q||state.q.split(/\s+/).every(w=>p._q.includes(w)));
+
+// 設置場所マップ
+const BOX={user:[12,95,118,110],campus:[160,50,150,95],ot:[160,160,150,90],branch:[340,50,140,95],sp:[340,160,140,90],dc:[510,50,170,200],cloud:[710,50,178,200]};
+const WIRES=[['user','campus'],['user','ot'],['campus','branch'],['ot','sp'],['branch','dc'],['sp','dc'],['dc','cloud'],['branch','sp']];
+function drawMap(){
+  const c=(z)=>{const[x,y,w,h]=BOX[z];return[x+w/2,y+h/2]};
+  let s=WIRES.map(([a,b])=>{const[x1,y1]=c(a),[x2,y2]=c(b);return`<path class="wire" d="M${x1} ${y1}L${x2} ${y2}"/>`}).join('');
+  s+=`<g class="band${state.fam==='sec'?' on':''}" data-fam="sec" style="cursor:pointer"><rect x="6" y="8" width="888" height="30" rx="8" style="stroke:${col('sec')}"/><text x="18" y="27" style="fill:${col('sec')}">セキュリティ ─ すべてのエリアを横断して保護</text></g>`;
+  s+=`<g class="band${state.fam==='obs'?' on':''}" data-fam="obs" style="cursor:pointer"><rect x="6" y="262" width="888" height="30" rx="8" style="stroke:${col('obs')}"/><text x="18" y="281" style="fill:${col('obs')}">オブザーバビリティ ─ すべてのエリアを横断して可視化</text></g>`;
+  for(const z in BOX){
+    const[x,y,w,h]=BOX[z];const ps=PRODUCTS.filter(p=>p.z.includes(z));const per=Math.floor((w-20)/11);
+    const dots=ps.map((p,i)=>`<circle class="dot" cx="${x+14+(i%per)*11}" cy="${y+54+Math.floor(i/per)*11}" r="4.2" style="fill:${col(p.f)};opacity:${match(p)?1:.18}"><title>${esc(p.n)}</title></circle>`).join('');
+    s+=`<g class="zone${state.zone===z?' on':''}" data-zone="${z}" tabindex="0" role="button" aria-pressed="${state.zone===z}" aria-label="${ZONES[z]}で絞り込み"><rect class="zb" x="${x}" y="${y}" width="${w}" height="${h}" rx="10"/><text class="zl" x="${x+12}" y="${y+22}">${ZONES[z]}</text><text class="zs" x="${x+12}" y="${y+38}">${ps.length} 製品</text>${dots}</g>`;
+  }
+  $('#map').innerHTML=s;
+}
+$('#map').addEventListener('click',e=>{
+  const b=e.target.closest('.band');if(b){setFam(state.fam===b.dataset.fam?'all':b.dataset.fam);return}
+  const g=e.target.closest('.zone');if(g)setZone(g.dataset.zone);
+});
+$('#map').addEventListener('keydown',e=>{const g=e.target.closest('.zone');if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();setZone(g.dataset.zone)}});
+function setZone(z){state.zone=state.zone===z?null:z;render()}
+function setFam(f){state.fam=f;render()}
+
+// ファミリーチップ
+function drawChips(){
+  const cnt=f=>PRODUCTS.filter(p=>(f==='all'||p.f===f)&&(!state.zone||p.z.includes(state.zone))).length;
+  let s=`<button class="chip" style="--c:var(--ink)" aria-pressed="${state.fam==='all'}" data-f="all"><i></i>すべて <span class="n">${cnt('all')}</span></button>`;
+  s+=FAMILIES.map(f=>`<button class="chip" style="--c:${col(f.id)}" aria-pressed="${state.fam===f.id}" data-f="${f.id}"><i></i>${f.n} <span class="n">${cnt(f.id)}</span></button>`).join('');
+  if(state.zone)s+=`<span class="active-zone">エリア: <b>${ZONES[state.zone]}</b><button data-clear>解除</button></span>`;
+  $('#chips').innerHTML=s;
+}
+$('#chips').addEventListener('click',e=>{
+  if(e.target.closest('[data-clear]')){state.zone=null;render();return}
+  const b=e.target.closest('.chip');if(b)setFam(b.dataset.f);
+});
+
+const zoneLabel=p=>p.z.map(z=>z.toUpperCase()).join(' · ');
+const chipsOf=(m,max=4)=>m.slice(0,max).map(x=>`<span>${esc(x)}</span>`).join('')+(m.length>max?`<span>+${m.length-max}</span>`:'');
+
+const flagsOf=p=>{const f=[SP[p.id]&&'型番表',LI[p.id]&&'ライセンス',CO[p.id]&&'競合'].filter(Boolean);return f.length?`<div class="flags">${f.map(x=>`<span>${x}</span>`).join('')}</div>`:''};
+// 検索語が旧名に当たったときは「旧名: …」を出す
+const wasHint=p=>{if(!state.q)return'';const a=p._al.find(a=>state.q.split(/\s+/).some(w=>norm(a.o).includes(w)));return a?`<div class="was">旧: <b>${esc(a.o)}</b> → ${esc(a.n)}</div>`:''};
+
+function aliasView(){
+  const q=state.q;
+  const rows=AL.filter(a=>{
+    const p=a.id&&BYID[a.id];
+    if(state.fam!=='all'&&(!p||p.f!==state.fam))return false;
+    if(state.zone&&(!p||!p.z.includes(state.zone)))return false;
+    return!q||q.split(/\s+/).every(w=>norm(a.o+' '+a.n+' '+a.k).includes(w));
+  });
+  if(!rows.length)return`<p class="empty">該当する旧名・後継の情報がありません。</p>`;
+  const groups=[['名称変更','製品名が変わったもの'],['後継機種','販売終了した機種と主な移行先（構成により異なるため、EoL告知で確認）'],['ライセンス','ライセンス体系の切り替え']];
+  return`<div class="alias">${groups.map(([k,d])=>{const rs=rows.filter(a=>a.k===k);if(!rs.length)return'';
+    return`<section><h2>${k}<small>${rs.length}件</small></h2><p style="margin:0 0 8px;color:var(--muted);font-size:13px">${d}</p><div class="tblwrap"><table><thead><tr><th>旧名・旧機種</th><th></th><th>現在の名称・移行先</th><th>ファミリー</th></tr></thead><tbody>${rs.map(a=>{const p=a.id&&BYID[a.id];
+      return`<tr><td class="o">${esc(a.o)}</td><td class="arrow">→</td><td class="n">${esc(a.n)}</td><td>${p?`<button data-open="${p.id}" style="--c:${col(p.f)}">${esc(FAM[p.f].n)} ↗</button>`:'<span style="color:var(--muted);font-size:12px">ページ未掲載</span>'}</td></tr>`}).join('')}</tbody></table></div></section>`}).join('')}</div>`;
+}
+
+function cardView(list){
+  return FAMILIES.map(f=>{
+    const ps=list.filter(p=>p.f===f.id);if(!ps.length)return'';
+    return`<section class="fam" id="${f.id}" style="--c:${col(f.id)}">
+      <div class="fam-head"><div class="fam-ico">${glyph(f.id)}</div>
+        <div><h2>${f.n}<small>${f.en}</small></h2><p>${f.d}</p></div>
+        <div class="cnt">${ps.length} / ${PRODUCTS.filter(p=>p.f===f.id).length} 製品</div></div>
+      <div class="grid">${ps.map(p=>`<button class="card" data-open="${p.id}" style="--c:${col(p.f)}">
+        <div class="art">${ART(p.k)}</div>
+        <div class="body"><span class="kind">${zoneLabel(p)}</span><h3>${esc(p.n)}</h3><div class="tag">${esc(p.t)}</div>${wasHint(p)}
+        <div class="models">${chipsOf(p.m)}</div>${flagsOf(p)}</div></button>`).join('')}</div></section>`;
+  }).join('');
+}
+function treeView(list){
+  const filtered=state.fam!=='all'||state.zone||state.q;
+  return`<div class="tree">${FAMILIES.map(f=>{
+    const ps=list.filter(p=>p.f===f.id);if(!ps.length)return'';
+    return`<details style="--c:${col(f.id)}" ${filtered||state.fam===f.id?'open':''}><summary><span class="fam-ico" style="width:30px;height:30px;border-radius:7px">${glyph(f.id)}</span><b>${f.n}</b><span class="meta">${f.en} · ${ps.length}</span></summary>
+      <ul>${ps.map(p=>`<li><button data-open="${p.id}">${esc(p.n)}</button><span class="t">${esc(p.t)}</span>${wasHint(p)}<div class="models">${chipsOf(p.m,8)}</div></li>`).join('')}</ul></details>`;
+  }).join('')}</div>`;
+}
+
+function render(){
+  const list=PRODUCTS.filter(match);
+  drawMap();drawChips();
+  $('#view').innerHTML=state.view==='alias'?aliasView():list.length?(state.view==='card'?cardView(list):treeView(list)):`<p class="empty">条件に合う製品がありません。検索語を変えるか、エリア・ファミリーの絞り込みを解除してください。</p>`;
+  ['card','tree','alias'].forEach(v=>$('#v-'+v).setAttribute('aria-pressed',state.view===v));
+}
+$('#q').addEventListener('input',e=>{state.q=norm(e.target.value.trim());render()});
+['card','tree','alias'].forEach(v=>$('#v-'+v).addEventListener('click',()=>{state.view=v;try{localStorage.setItem('atlas-view',v)}catch(e){}render()}));
+$('#view').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openDrawer(b.dataset.open,b)});
+
+// 統計
+const nModels=PRODUCTS.reduce((a,p)=>a+p.m.length,0);
+$('#stats').innerHTML=[[FAMILIES.length,'ファミリー'],[PRODUCTS.length,'製品・サービス'],[nModels,'主なシリーズ/型番'],[Object.keys(ZONES).length,'設置エリア']].map(([n,l])=>`<div><b>${n}</b><span>${l}</span></div>`).join('');
+
+// 詳細ドロワー
+let lastFocus=null,curP=null;
+const setHash=h=>{try{history.replaceState(null,'',h?'#'+h:location.pathname+location.search)}catch(e){}};
+function openDrawer(id,from){
+  const p=BYID[id];if(!p)return;const f=FAM[p.f];
+  lastFocus=from||lastFocus||document.activeElement;
+  const dr=$('#drawer');dr.style.setProperty('--c',col(p.f));
+  $('#d-crumb').textContent=`${f.n} / ${p.n}`;
+  $('#d-art').innerHTML=ART(p.k);
+  curP=p;
+  const tabs=[['ov','概要'],SP[p.id]&&['spec','型番スペック'],LI[p.id]&&['lic','ライセンス'],CO[p.id]&&['comp','競合']].filter(Boolean);
+  const cur=tabs.some(t=>t[0]===state.tab)?state.tab:'ov';
+  $('#d-tabs').innerHTML=tabs.map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===cur}" tabindex="${k===cur?0:-1}">${l}</button>`).join('');
+  $('#d-tabs').hidden=tabs.length<2;
+  showTab(cur);
+  dr.classList.add('on');dr.setAttribute('aria-hidden','false');$('#scrim').classList.add('on');
+  document.body.style.overflow='hidden';
+  setHash(p.id);
+  $('#d-close').focus({preventScroll:true});
+}
+const CHECKED=typeof SPEC_CHECKED!=='undefined'?SPEC_CHECKED:'';
+const head=p=>`<div><span class="kind">${FAM[p.f].en}</span><h2 id="d-title">${esc(p.n)}</h2><p class="lead">${esc(p.t)}</p></div>`;
+const srcList=src=>src&&src.length?`<div><h4>出典（${CHECKED}確認）</h4><ul class="src">${src.map(([t,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${esc(t)} ↗</a></li>`).join('')}</ul></div>`:'';
+const PANES={
+  spec:p=>{const s=SP[p.id];return head(p)+`<div><h4>${esc(s.title)}</h4><div class="tblwrap"><table class="spec"><thead><tr>${s.cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${s.note?`<p class="lead" style="font-size:13px;margin-top:8px">${esc(s.note)}</p>`:''}</div>`+srcList(s.src)+`<p class="note">代表的なモデルのみ載せています。全モデルと測定条件は出典のデータシートで確認してください。</p>`},
+  lic:p=>{const l=LI[p.id];return head(p)+`<div><h4>ライセンス方式</h4><p><b>${esc(l.model)}</b>${l.ok?'<span class="badge ok">公式資料で確認済み</span>':'<span class="badge ng">未確認・要確認</span>'}</p>${l.term?`<p class="lead" style="font-size:13.5px">${esc(l.term)}</p>`:''}</div>`
+    +(l.tiers.length?`<div><h4>階層・種類</h4><div class="tier">${l.tiers.map(([a,b])=>`<div>${esc(a)}</div><div>${esc(b)}</div>`).join('')}</div></div>`:'')
+    +(l.points.length?`<div><h4>押さえどころ</h4><ul class="uses">${l.points.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'')
+    +(l.legacy?`<div><h4>従来の体系</h4><p>${esc(l.legacy)}</p></div>`:'')
+    +srcList(l.src)+`<p class="note">ライセンス体系は改定が多いため、見積もりの前に最新のオーダリングガイドで確認してください。</p>`},
+  comp:p=>{const c=CO[p.id];return head(p)+`<div><h4>比較されやすい製品</h4><div class="rivals">${c.r.map(x=>`<span>${esc(x)}</span>`).join('')}</div></div><div><h4>比較で見られやすい観点</h4><p>${esc(c.a)}</p></div><p class="note">公開情報をもとにした一般的な比較対象です（${typeof COMPETE_CHECKED!=='undefined'?COMPETE_CHECKED:''}時点）。優劣の評価は含めていません。提案のときは社内の競合資料もあわせて確認してください。</p>`},
+  ov:p=>{const spec=p.s?`<table class="spec"><tbody>${p.s.map(([a,b])=>`<tr><th>${esc(a)}</th><td>${esc(b)}</td></tr>`).join('')}</tbody></table>`:'';
+  const q=encodeURIComponent(p.n.replace(/（.*?）/g,''));
+  return`${head(p)}
+    ${p._al.length?`<div><h4>旧名・前身</h4><p>${p._al.map(a=>`<span class="was">${esc(a.o)} → <b>${esc(a.n)}</b></span>`).join('<br>')}</p></div>`:''}
+    <div><h4>概要</h4><p>${esc(p.d)}</p></div>
+    ${spec?`<div><h4>シリーズ構成</h4>${spec}</div>`:''}
+    <div><h4>主な型番・構成要素</h4><div class="models">${p.m.map(x=>`<span>${esc(x)}</span>`).join('')}</div></div>
+    <div><h4>主な用途</h4><ul class="uses">${p.u.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+    <div><h4>設置エリア</h4><div class="zones">${p.z.map(z=>`<span>${ZONES[z]}</span>`).join('')}</div></div>
+    ${p.r&&p.r.length?`<div><h4>よく組み合わせる製品</h4><div class="rel">${p.r.filter(r=>BYID[r]).map(r=>`<button data-rel="${r}" style="--c:${col(BYID[r].f)}">${esc(BYID[r].n)}</button>`).join('')}</div></div>`:''}
+    <a class="ext" href="https://search.cisco.com/search?query=${q}" target="_blank" rel="noopener">cisco.com で「${esc(p.n.replace(/（.*?）/g,''))}」を検索 ↗</a>
+    <p class="note">非公式のまとめです。型番やラインナップは時期により変わるため、導入検討の際は公式のデータシートを確認してください。</p>`}
+};
+function showTab(k){
+  $('#d-tabs').querySelectorAll('[data-tab]').forEach(b=>{const on=b.dataset.tab===k;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1});
+  $('#d-body').innerHTML=PANES[k](curP);$('#d-body').scrollTop=0;
+}
+$('#d-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b){state.tab=b.dataset.tab;showTab(state.tab)}});
+$('#d-tabs').addEventListener('keydown',e=>{
+  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
+  const bs=[...$('#d-tabs').querySelectorAll('[data-tab]')],i=bs.findIndex(b=>b.getAttribute('aria-selected')==='true');
+  const n=bs[(i+(e.key==='ArrowRight'?1:-1)+bs.length)%bs.length];state.tab=n.dataset.tab;showTab(state.tab);n.focus();
+});
+function closeDrawer(){
+  const dr=$('#drawer');if(!dr.classList.contains('on'))return;
+  dr.classList.remove('on');dr.setAttribute('aria-hidden','true');$('#scrim').classList.remove('on');
+  document.body.style.overflow='';setHash('');
+  if(lastFocus&&document.contains(lastFocus))lastFocus.focus({preventScroll:true});lastFocus=null;
+}
+$('#d-close').addEventListener('click',closeDrawer);
+$('#scrim').addEventListener('click',closeDrawer);
+$('#d-body').addEventListener('click',e=>{const b=e.target.closest('[data-rel]');if(b)openDrawer(b.dataset.rel)});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeDrawer();
+  if(e.key==='/'&&document.activeElement!==$('#q')&&!$('#drawer').classList.contains('on')){e.preventDefault();$('#q').focus()}
+});
+// #ファミリーID または #製品ID で直接開く
+(()=>{const h=location.hash.slice(1);if(FAM[h])state.fam=h;else if(BYID[h])setTimeout(()=>openDrawer(h),0)})();
+render();
+</script>
+
+</body></html>
